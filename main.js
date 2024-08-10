@@ -1,33 +1,30 @@
-const instance_skel = require('../../../instance_skel')
+const { InstanceBase, Regex, runEntrypoint, InstanceStatus} = require('@companion-module/base')
 
 const configs = require('./configs')
 const actions = require('./actions')
 
 const snmp = require('net-snmp')
-class Instance extends instance_skel {
-	constructor(system, id, config) {
-		super(system, id, config)
+
+class ModuleInstance extends InstanceBase {
+	constructor(internal) {
+		super(internal)
 
 		Object.assign(this, {
 			...configs,
 			...actions,
 		})
-
-		this.config = config
-		this.session = null
-
-		// instance state store
-		this.state = {
-			someState: 'default state',
-		}
 	}
 
-	init() {
+	async init(config) {
+		this.config = config
+
+		this.updateStatus(InstanceStatus.Ok)
 		this.initActions()
 		this.connectAgent()
 	}
 
-	updateConfig(config) {
+
+	async configUpdated(config) {
 		this.config = config
 		this.connectAgent()
 	}
@@ -37,7 +34,7 @@ class Instance extends instance_skel {
 
 		if (this.config.ip === undefined || this.config.ip === '') {
 			this.log('warn', 'Please configure your instance')
-			this.status(this.STATUS_UNKNOWN, 'Missing configuration')
+			this.updateStatus(InstanceStatus.unknown_error, 'Missing configuration')
 			return
 		}
 
@@ -50,25 +47,25 @@ class Instance extends instance_skel {
 
 			if (this.config.community === undefined || this.config.community === '') {
 				this.log('warn', 'When using SNMP v1 or v2c please specify a community.')
-				this.status(this.STATUS_UNKNOWN, 'Missing community')
+				this.updateStatus(InstanceStatus.unknown_error, 'Missing community')
 				return
 			}
 
 			this.session = snmp.createSession(this.config.ip, this.config.community, options)
-			this.status(this.STATUS_OK)
+			this.updateStatus(InstanceStatus.Ok)
 			return
 		}
 
 		// create v3 session
 		if (this.config.engineID === undefined || this.config.engineID === '') {
-			this.log('warn', 'When using SNMP v2 please specify an Engine ID.')
-			this.status(this.STATUS_UNKNOWN, 'Missing Engine ID')
+			this.log('warn', 'When using SNMP v3 please specify an Engine ID.')
+			this.updateStatus(InstanceStatus.unknown_error, 'Missing Engine ID')
 			return
 		}
 
 		if (this.config.username === undefined || this.config.username === '') {
-			this.log('warn', 'When using SNMP v2 please specify an User Name.')
-			this.status(this.STATUS_UNKNOWN, 'Missing User Name')
+			this.log('warn', 'When using SNMP v3 please specify an User Name.')
+			this.updateStatus(InstanceStatus.unknown_error, 'Missing User Name')
 			return
 		}
 
@@ -85,7 +82,7 @@ class Instance extends instance_skel {
 		if (this.config.securityLevel !== 'noAuthNoPriv') {
 			if (this.config.authKey === undefined || this.config.authKey === '') {
 				this.log('warn', 'please specify an Auth Key when Security level is authNoPriv or authPriv.')
-				this.status(this.STATUS_UNKNOWN, 'Missing Auth Key')
+				this.updateStatus(InstanceStatus.unknown_error, 'Missing Auth Key')
 				return
 			}
 
@@ -95,7 +92,7 @@ class Instance extends instance_skel {
 			if (this.config.securityLevel == 'authPriv') {
 				if (this.config.privKey === undefined || this.config.privKey === '') {
 					this.log('warn', 'Please specify a Priv Key when Security level is authPriv.')
-					this.status(this.STATUS_UNKNOWN, 'Missing Priv Key')
+					this.updateStatus(InstanceStatus.unknown_error, 'Missing Priv Key')
 					return
 				}
 				user.privProtocol = snmp.PrivProtocols[this.config.privProtocol]
@@ -104,7 +101,7 @@ class Instance extends instance_skel {
 		}
 
 		this.session = snmp.createV3Session(this.config.ip, user, options)
-		this.status(this.STATUS_OK)
+		this.updateStatus(InstanceStatus.Ok)
 	}
 
 	disconnectAgent() {
@@ -116,7 +113,7 @@ class Instance extends instance_skel {
 
 	parse(value) {
 		if (value.includes('$(')) {
-			this.parseVariables(value, (parsed) => {
+			this.parseVariablesInString(value, (parsed) => {
 				value = parsed
 			})
 		}
@@ -131,9 +128,12 @@ class Instance extends instance_skel {
 		})
 	}
 
-	destroy() {
+	async destroy() {
 		this.disconnectAgent()
+		this.log('debug', 'destroy')
 	}
 }
 
-module.exports = Instance
+
+runEntrypoint(ModuleInstance, [])
+//module.exports = Instance

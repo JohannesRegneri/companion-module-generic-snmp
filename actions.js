@@ -5,21 +5,23 @@ module.exports = {
 		const actions = {}
 
 		actions.setString = {
-			label: 'Set OID value to an OctetString',
+			name: 'Set OID value to an OctetString',
 			options: [
 				{
-					type: 'textwithvariables',
+					type: 'textinput',
 					label: 'OID',
 					id: 'oid',
 					default: '',
 					required: true,
+					useVariables: !0,
 				},
 				{
-					type: 'textwithvariables',
+					type: 'textinput',
 					label: 'Value',
 					id: 'value',
 					default: '',
 					required: true,
+					useVariables: !0,
 				},
 			],
 			callback: ({ options: { oid, value } }) => {
@@ -28,14 +30,15 @@ module.exports = {
 		}
 
 		actions.setNumber = {
-			label: 'Set OID value to a Number',
+			name: 'Set OID value to a Number',
 			options: [
 				{
-					type: 'textwithvariables',
+					type: 'textinput',
 					label: 'OID',
 					id: 'oid',
 					default: '',
 					required: true,
+					useVariables: !0,
 				},
 				{
 					type: 'dropdown',
@@ -53,10 +56,11 @@ module.exports = {
 					default: 'Integer',
 				},
 				{
-					type: 'textwithvariables',
+					type: 'textinput',
 					label: 'Value',
 					id: 'value',
 					default: '0',
+					useVariables: !0,
 				},
 			],
 			callback: ({ options: { oid, type, value } }) => {
@@ -72,20 +76,22 @@ module.exports = {
 		}
 
 		actions.setBoolean = {
-			label: 'Set OID value to a Boolean',
+			name: 'Set OID value to a Boolean',
 			options: [
 				{
-					type: 'textwithvariables',
+					type: 'textinput',
 					label: 'OID',
 					id: 'oid',
 					default: '',
 					required: true,
+					useVariables: !0,
 				},
 				{
-					type: 'textwithvariables',
+					type: 'textinput',
 					label: 'Value (true/false, yes/no)',
 					id: 'value',
 					default: 'true',
+					useVariables: !0,
 				},
 			],
 			callback: ({ options: { oid, value } }) => {
@@ -114,21 +120,23 @@ module.exports = {
 		}
 
 		actions.setIpAddress = {
-			label: 'Set OID value to an IP Address',
+			name: 'Set OID value to an IP Address',
 			options: [
 				{
-					type: 'textwithvariables',
+					type: 'textinput',
 					label: 'OID',
 					id: 'oid',
 					default: '',
 					required: true,
+					useVariables: !0,
 				},
 				{
-					type: 'textwithvariables',
+					type: 'textinput',
 					label: 'Value',
 					id: 'value',
 					default: '',
 					required: true,
+					useVariables: !0,
 				},
 			],
 			callback: ({ options: { oid, value } }) => {
@@ -137,21 +145,23 @@ module.exports = {
 		}
 
 		actions.setOID = {
-			label: 'Set OID value to an OID',
+			name: 'Set OID value to an OID',
 			options: [
 				{
-					type: 'textwithvariables',
+					type: 'textinput',
 					label: 'OID',
 					id: 'oid',
 					default: '',
 					required: true,
+					useVariables: !0,
 				},
 				{
-					type: 'textwithvariables',
+					type: 'textinput',
 					label: 'Value',
 					id: 'value',
 					default: '',
 					required: true,
+					useVariables: !0,
 				},
 			],
 			callback: ({ options: { oid, value } }) => {
@@ -159,6 +169,6 @@ module.exports = {
 			},
 		}
 
-		this.setActions(actions)
+		this.setActionDefinitions(actions)
 	},
 }

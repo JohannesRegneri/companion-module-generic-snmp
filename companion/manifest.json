@@ -1,0 +1,21 @@
+{
+	"id": "generic-snmp",
+	"name": "generic-snmp",
+	"shortname": "generic-snmp",
+	"description": "generic-snmp",
+	"version": "1.1.0",
+	"license": "ISC",
+	"repository": "git+https://github.com/bitfocus/companion-module-generic-snmp.git",
+	"bugs": "https://github.com/bitfocus/companion-module-generic-snmp/issues",
+	"maintainers": [],
+	"legacyIds": [],
+	"runtime": {
+		"type": "node18",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../main.js"
+	},
+	"manufacturer": "",
+	"products": [],
+	"keywords": []
+}
